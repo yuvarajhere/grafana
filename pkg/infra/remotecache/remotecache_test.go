@@ -37,11 +37,13 @@ func createTestClient(t *testing.T, opts *setting.RemoteCacheOptions, sqlstore *
 }
 
 func TestCachedBasedOnConfig(t *testing.T) {
-
 	cfg := setting.NewCfg()
-	cfg.Load(&setting.CommandLineArgs{
+	err := cfg.Load(&setting.CommandLineArgs{
 		HomePath: "../../../",
 	})
+	if err != nil {
+		t.Fatalf("failed to load config. error: %v", err)
+	}
 
 	client := createTestClient(t, cfg.RemoteCacheOptions, sqlstore.InitTestDB(t))
 	runTestsForClient(t, client)

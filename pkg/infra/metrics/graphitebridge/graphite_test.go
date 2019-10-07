@@ -549,7 +549,9 @@ func newMockGraphite(port string) (*mockGraphite, error) {
 			errc <- err
 		}
 		var b bytes.Buffer
-		io.Copy(&b, conn)
+		if _, err := io.Copy(&b, conn); err != nil {
+			// TODO: Deal with error
+		}
 		readc <- b.String()
 	}()
 

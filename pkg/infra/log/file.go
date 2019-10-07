@@ -209,7 +209,7 @@ func (w *FileLogWriter) DoRotate() error {
 
 func (w *FileLogWriter) deleteOldLog() {
 	dir := filepath.Dir(w.Filename)
-	filepath.Walk(dir, func(path string, info os.FileInfo, err error) (returnErr error) {
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) (returnErr error) {
 		defer func() {
 			if r := recover(); r != nil {
 				returnErr = fmt.Errorf("Unable to delete old log '%s', error: %+v", path, r)
@@ -223,6 +223,9 @@ func (w *FileLogWriter) deleteOldLog() {
 		}
 		return returnErr
 	})
+	if err != nil {
+		// TODO: Deal with error
+	}
 }
 
 // destroy file logger, close file writer.
@@ -234,7 +237,9 @@ func (w *FileLogWriter) Close() {
 // there are no buffering messages in file logger in memory.
 // flush file means sync file from disk.
 func (w *FileLogWriter) Flush() {
-	w.mw.fd.Sync()
+	if err := w.mw.fd.Sync(); err != nil {
+		// TODO: Deal with error
+	}
 }
 
 // Reload file logger
